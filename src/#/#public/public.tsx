@@ -14,6 +14,42 @@ import { PUBLIC_ROUTES } from './routes';
 
 import { IRoute } from '@types';
 
+interface IProps extends RouteComponentProps {
+  empty?: any;
+}
+
+export const PublicTsx: React.FC<IProps> = () => {
+  const { bottomBar, content, root, sectionDesktop } = useStyles();
+  return (
+    <div className={root}>
+      <HiHeader blocks={{}} hideSecond />
+
+      <main className={content}>
+        <Suspense fallback={<LoadingPage />}>
+          <Switch>
+            {PUBLIC_ROUTES.map((route: IRoute) => (
+              <NestedRoute key={route.path} {...route} />
+            ))}
+          </Switch>
+        </Suspense>
+      </main>
+
+      <AppBar color="default" key={'bottom'} position="static" component={'footer'}>
+        <Toolbar className={bottomBar}>
+          <Typography variant="h6" color="inherit">
+            Copyright &copy; Lorder
+          </Typography>
+          <div className={sectionDesktop}>
+            <IconButton color="inherit" href={'https://t.me/joinchat/BmXj_kK5vnoAWdQF7tTc1g'} target={'_blank'}>
+              <TelegramIco />
+            </IconButton>
+          </div>
+        </Toolbar>
+      </AppBar>
+    </div>
+  );
+};
+
 export const useStyles = makeStyles((theme: Theme) => ({
   bottomBar: {
     alignItems: 'center',
@@ -46,39 +82,3 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
   },
 }));
-
-interface IProps extends RouteComponentProps {
-  empty?: any;
-}
-
-export const PublicTsx: React.FC<IProps> = () => {
-  const { bottomBar, content, root, sectionDesktop } = useStyles();
-  return (
-    <div className={root}>
-      <HiHeader hideSecond />
-
-      <main className={content}>
-        <Suspense fallback={<LoadingPage />}>
-          <Switch>
-            {PUBLIC_ROUTES.map((route: IRoute) => (
-              <NestedRoute key={route.path} {...route} />
-            ))}
-          </Switch>
-        </Suspense>
-      </main>
-
-      <AppBar color="default" key={'bottom'} position="static" component={'footer'}>
-        <Toolbar className={bottomBar}>
-          <Typography variant="h6" color="inherit">
-            Copyright &copy; Lorder
-          </Typography>
-          <div className={sectionDesktop}>
-            <IconButton color="inherit" href={'https://t.me/joinchat/BmXj_kK5vnoAWdQF7tTc1g'} target={'_blank'}>
-              <TelegramIco />
-            </IconButton>
-          </div>
-        </Toolbar>
-      </AppBar>
-    </div>
-  );
-};

@@ -5,7 +5,7 @@ import { createDeepEqualSelector } from '#/@store/@common/createSelector';
 import { convertSecondsToHours } from '#/@store/@common/helpers';
 import { defaultProjectId, userId } from '#/@store/identity';
 import { getTaskById } from '#/@store/tasks';
-import { currentTaskId, currentTimerTime, currentUserWorkId } from '#/@store/timer';
+import { currentProjectId, currentTaskId, currentTimerTime, currentUserWorkId } from '#/@store/timer';
 import { currentRange, IRangeFilter, RANGE_FROM_RANGE_FILTER } from '#/@store/ui';
 
 import { IEvent, IState, ITask, IUserWork } from '@types';
@@ -44,6 +44,11 @@ export const isPaused = createDeepEqualSelector(
   (uw, taskId) => uw && uw.taskId !== taskId
 );
 
+export const isRelax = createDeepEqualSelector(
+  [currentProjectId, defaultProjectId],
+  (curPId, defPId) => curPId === defPId
+);
+
 export const inProgress = createDeepEqualSelector(isPaused, i => !i);
 
 export const filteredEvents = createDeepEqualSelector(
@@ -51,7 +56,7 @@ export const filteredEvents = createDeepEqualSelector(
   (userWorks: IUserWork[], getTask, defPrId: number | undefined, range): IEvent[] => {
     return userWorks
       .filter((uw: IUserWork) => {
-        return (uw.finishAt || moment()).diff(range[0]) > 0 && range[1].diff(uw.startAt) > 0;
+        return (uw.finishAt || moment()).diff(range[0]) > 0 && (range[1] || moment()).diff(uw.startAt) > 0;
       })
       .sort((a, b) => (a.startAt.unix() > b.startAt.unix() ? 1 : -1))
       .map(userWork => {
@@ -67,13 +72,6 @@ export const filteredEvents = createDeepEqualSelector(
       });
   }
 );
-
-// export const timeSpentCurrentRange = createDeepEqualSelector(
-//   [getUserWorksInRange, currentTimerTime, currentRange],
-//   (getList, curTime, range) => {
-//     return convertSecondsToDurationWithLocal(durationFromUserWorkList(getList(...range), curTime, ...range), 24);
-//   }
-// );
 
 export const currentTimeDependentOnTimer = createDeepEqualSelector([currentTimerTime], curTime => {
   if (curTime) {

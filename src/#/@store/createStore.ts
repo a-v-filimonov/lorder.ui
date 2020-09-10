@@ -3,7 +3,6 @@ import { createBrowserHistory } from 'history';
 import omit from 'lodash/omit';
 import { applyMiddleware, compose, createStore as createReduxStore } from 'redux';
 import { persistStore } from 'redux-persist';
-import createSagaMiddleware from 'redux-saga';
 import thunk from 'redux-thunk';
 
 import { replaceReducers } from '#/@store/asyncReducers';
@@ -15,18 +14,12 @@ import clientsMiddleware from './@common/middlewares/clients/clientsMiddleware';
 import { refreshTokenMiddleware } from './@common/middlewares/refreshToken';
 import { createRootReducer } from './createRootReducer';
 import { initExternalLibraries } from './externalLibraries/thunk';
-import { rootSaga } from './rootSaga';
 
 import { ROLE } from '@types';
 
-const composeEnhancers =
-  process.env.NODE_ENV === 'development' &&
-  typeof window === 'object' &&
-  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    ? (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-        // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-      })
-    : compose;
+const isDevtoolsAvailable =
+  process.env.NODE_ENV === 'development' && (window as any)?.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+const composeEnhancers = isDevtoolsAvailable ? (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
 
 export const history = createBrowserHistory();
 export let store;
@@ -34,17 +27,12 @@ export let store;
 export async function createStore(initialState?: any) {
   // Create a history of your choosing (we're using a browser history in this case)
   const rootReducer = await createRootReducer(history, ROLE.SUPER_ADMIN);
-  const sagaMiddleware = createSagaMiddleware();
 
   store = createReduxStore(
     rootReducer,
     initialState,
-    composeEnhancers(
-      applyMiddleware(thunk, routerMiddleware(history), refreshTokenMiddleware, clientsMiddleware, sagaMiddleware)
-    )
+    composeEnhancers(applyMiddleware(thunk, routerMiddleware(history), refreshTokenMiddleware, clientsMiddleware))
   );
-
-  sagaMiddleware.run(rootSaga);
 
   if (module.hot) {
     module.hot.accept('./createRootReducer', () => {

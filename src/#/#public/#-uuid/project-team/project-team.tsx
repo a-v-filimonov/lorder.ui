@@ -9,7 +9,7 @@ import Slider from '@components/slider';
 
 import HeaderWithButton from '#/#public/#-uuid/project-values/header-with-button';
 
-import { useSearch } from '@hooks/useSearch';
+import { useSearch } from '@hooks/use-search';
 import { IMember } from '@types';
 
 const getForSearch = m => m?.member?.displayName || '';
@@ -26,7 +26,7 @@ export const ProjectTeam: React.FC<IProps> = memo<IProps>(({ members }) => {
     <section className={sectionWrap}>
       <Container maxWidth="lg">
         <Grid container justify="center">
-          <HeaderWithButton title="НАША КОМАНДА" buttonText="Редактировать" />
+          <HeaderWithButton title="КОМАНДА ПРОЕКТА" buttonText="Редактировать" />
           <p className={tagline}>Мы дарим людям мир и красоту, но только, если это будет добром!</p>
           <InputSearch searchCallback={onChange} placeholder="Найти участника по имени" variant="Centered" />
         </Grid>
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexFlow: 'column',
     flexWrap: 'wrap',
-    paddingTop: 145,
+    paddingTop: 32,
   },
   sliderWrap: {
     height: 409,

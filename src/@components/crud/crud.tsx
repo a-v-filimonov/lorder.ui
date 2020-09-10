@@ -115,6 +115,8 @@ export interface ICrudColumn {
   editable?: boolean;
   skip?: (item) => boolean;
   component?: (...a: any) => JSX.Element | null;
+  fieldComponent?: (...a: any) => JSX.Element | null;
+  fieldProps?: any;
 }
 
 export interface IColumnComponent {
@@ -220,7 +222,7 @@ export const CrudJsx: React.FC<ICrudProps> = React.memo(
     const handleCheckClick = useCallback(
       event => {
         event.stopPropagation();
-        const targetValue = parseInt(event.currentTarget?.value || event.currentTarget?.dataset?.value, 0);
+        const targetValue = parseInt(event.currentTarget?.value || event.currentTarget?.dataset?.value, 10);
         let newSelected: Array<number | string> = [];
         const isAlreadySelected = selected.includes(targetValue);
         if (isAlreadySelected) {
@@ -237,7 +239,7 @@ export const CrudJsx: React.FC<ICrudProps> = React.memo(
       event => {
         event.stopPropagation();
         if (editItem && event.target.tagName === 'TD') {
-          const item = rows.find(el => el.id === parseInt(event.currentTarget?.dataset?.value, 0)) || {};
+          const item = rows.find(el => el.id === parseInt(event.currentTarget?.dataset?.value, 10)) || {};
           openDialog(
             <CreateForm
               form={formName}
@@ -261,7 +263,7 @@ export const CrudJsx: React.FC<ICrudProps> = React.memo(
     }, []);
 
     const handleChangeRowsPerPage = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-      setRowsPerPage(parseInt(event.target.value, 0));
+      setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
     }, []);
 

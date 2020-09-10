@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { Box, Grid } from '@material-ui/core';
 
 import ButtonEdit from '@components/button-edit';
 import GradientHead from '@components/gradient-head';
+
+import { ROUTE } from '#/@store/router';
 
 import LogoField from './logo-field';
 import { useStyles } from './styles';
@@ -11,16 +13,19 @@ import ProjectLogo from './time.png';
 
 import { ACCESS_LEVEL, IProject } from '@types';
 
-interface IprojectHeadProps {
+interface IProps {
   project: IProject;
-  editProjectLink: string;
   isAuth: boolean;
 }
 
-export const ProjectHeadTsx = ({ project, editProjectLink, isAuth }: IprojectHeadProps) => {
-  const { firstBlock, firstBlockContent, imageWrap, projectName, projectTagline, wrapper } = useStyles();
+export const ProjectHeadTsx = ({ project, isAuth }: IProps) => {
+  const isCurUserViolet = useMemo(() => {
+    return Boolean(project?.accessLevel && project.accessLevel >= ACCESS_LEVEL.VIOLET);
+  }, [project]);
+
+  const { firstBlock, firstBlockContent, imageWrap, projectName, projectTagLine, wrapper } = useStyles();
   return (
-    <GradientHead className={wrapper}>
+    <GradientHead color={project?.viewColor} className={wrapper}>
       <Grid item xs={12} sm={6} md={8}>
         <div className={firstBlock}>
           <LogoField
@@ -30,8 +35,12 @@ export const ProjectHeadTsx = ({ project, editProjectLink, isAuth }: IprojectHea
           />
           <div className={firstBlockContent}>
             <h1 className={projectName}>{project.title}</h1>
-            {project.desc && <p className={projectTagline}>{project.desc}</p>}
-            {isAuth && <ButtonEdit routePath={editProjectLink}>Редактировать</ButtonEdit>}
+            {project.desc && <p className={projectTagLine}>{project.desc}</p>}
+            {isAuth && (
+              <ButtonEdit to={isCurUserViolet ? ROUTE.PROJECT.SETTINGS(project.id) : ROUTE.PROJECT.ONE(project.id)}>
+                {isCurUserViolet ? 'Редактировать' : 'Доска Проекта'}
+              </ButtonEdit>
+            )}
           </div>
         </div>
       </Grid>

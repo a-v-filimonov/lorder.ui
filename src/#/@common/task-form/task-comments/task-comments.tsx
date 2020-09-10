@@ -80,7 +80,7 @@ export const TaskComments: React.FC<IProps> = ({
 
   const removeComment = useCallback(
     evt => {
-      const commentId = parseInt(evt?.currentTarget?.dataset?.id, 0);
+      const commentId = parseInt(evt?.currentTarget?.dataset?.id, 10);
       if (commentId && curTask?.id) {
         setIsCommentRemove(true);
         setRemovedCommentId(commentId);
@@ -167,13 +167,14 @@ export const TaskComments: React.FC<IProps> = ({
       )}
       <div className={classes.textareaWrap}>
         <TextField
-          id="outlined-multiline-static"
+          id="comment-multiline"
           label="Оставьте комментарий"
           multiline
           rows={4}
           variant="filled"
           onChange={handleInput}
           value={commentInput}
+          fullWidth
         />
         <Button
           variant="contained"

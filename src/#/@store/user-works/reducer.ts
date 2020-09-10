@@ -15,7 +15,7 @@ import {
 
 import { AxiosResponse } from 'axios';
 
-import { getUserWorks, getUserWorksBySequenceNumber, patchUserWork } from './actions';
+import { getUserWorksAct, getUserWorksBySequenceNumber, patchUserWork } from './actions';
 
 type S = DownloadList<UserWork>;
 type P<T = any> = AxiosResponse<T>;
@@ -71,13 +71,13 @@ const patchAndStopUserWorkHandler = (state: S) => {
 const patchAndStopUserWorkSuccessHandler = (state: S, { payload }: Action<P>) => {
   const { next, previous } = get(payload, 'data', {});
   let resState: S = state;
-  const nextIndex = resState.list.findIndex(el => el.id === next.id);
+  const nextIndex = resState.list.findIndex(el => el?.id === next?.id);
   if (~nextIndex) {
     resState = resState.updateItem(nextIndex, next);
   } else {
     resState = resState.addItem(next);
   }
-  const prevIndex = resState.list.findIndex(el => el.id === previous.id);
+  const prevIndex = resState.list.findIndex(el => el?.id === previous?.id);
   if (~prevIndex) {
     resState = resState.updateItem(prevIndex, previous);
   }
@@ -118,9 +118,9 @@ const bringBackSuccessHandler = (state: S, { payload }: Action<P>) => {
 
 export const userWorks: any = handleActions<S, P>(
   {
-    [combineActions(getUserWorks, getUserWorksBySequenceNumber)]: getUserWorksHandler,
-    [combineActions(getUserWorks.success, getUserWorksBySequenceNumber.success)]: getUserWorksSuccessHandler,
-    [combineActions(getUserWorks.fail, getUserWorksBySequenceNumber.fail)]: getUserWorksFailHandler,
+    [combineActions(getUserWorksAct, getUserWorksBySequenceNumber)]: getUserWorksHandler,
+    [combineActions(getUserWorksAct.success, getUserWorksBySequenceNumber.success)]: getUserWorksSuccessHandler,
+    [combineActions(getUserWorksAct.fail, getUserWorksBySequenceNumber.fail)]: getUserWorksFailHandler,
 
     [patchUserWork.toString()]: patchUserWorkHandler,
     [patchUserWork.success]: patchUserWorkSuccessHandler,
